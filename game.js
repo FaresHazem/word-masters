@@ -31,49 +31,51 @@ async function handleSubmission() {
   // Check if its an actual word or not
   const isValidWord = await validateWord(userWord);
   if (isValidWord) {
-    if (userWord === wordOfDay) win();
-    else {
-      // Count letters in wordOfDay
-      let letterCounts = {};
-      for (let letter of wordOfDay) {
-        if (letterCounts[letter]) {
-          letterCounts[letter]++;
-        } else {
-          letterCounts[letter] = 1;
-        }
+    // Count letters in wordOfDay
+    let letterCounts = {};
+    for (let letter of wordOfDay) {
+      if (letterCounts[letter]) {
+        letterCounts[letter]++;
+      } else {
+        letterCounts[letter] = 1;
       }
-
-      // First pass: mark exact matches green
-      for (let i = 0; i < 5; i++) {
-        let box = boxes[currentBoxMaxIndex - 5 + i];
-        let letter = userWord[i];
-        box.style.color = "white";
-        if (letter === wordOfDay[i]) {
-          box.style.backgroundColor = "darkgreen";
-          letterCounts[letter]--;
-        }
-      }
-
-      // Second pass: mark present but close yellow, else gray
-      for (let i = 0; i < 5; i++) {
-        let box = boxes[currentBoxMaxIndex - 5 + i];
-        let letter = userWord[i];
-        box.style.color = "white";
-
-        // skip already green
-        if (letter === wordOfDay[i]) continue;
-
-        if (letterCounts[letter] && letterCounts[letter] > 0) {
-          box.style.backgroundColor = "goldenrod";
-          letterCounts[letter]--;
-        } else {
-          box.style.backgroundColor = "#888";
-        }
-      }
-
-      // Clear current guess for the next row
-      userWord = "";
     }
+
+    // First pass: mark exact matches green
+    for (let i = 0; i < 5; i++) {
+      let box = boxes[currentBoxMaxIndex - 5 + i];
+      let letter = userWord[i];
+      box.style.color = "white";
+      if (letter === wordOfDay[i]) {
+        box.style.backgroundColor = "darkgreen";
+        letterCounts[letter]--;
+      }
+    }
+
+    // Second pass: mark present but close yellow, else gray
+    for (let i = 0; i < 5; i++) {
+      let box = boxes[currentBoxMaxIndex - 5 + i];
+      let letter = userWord[i];
+      box.style.color = "white";
+
+      // skip already green
+      if (letter === wordOfDay[i]) continue;
+
+      if (letterCounts[letter] && letterCounts[letter] > 0) {
+        box.style.backgroundColor = "goldenrod";
+        letterCounts[letter]--;
+      } else {
+        box.style.backgroundColor = "#888";
+      }
+    }
+
+    if (userWord === wordOfDay) {
+      win();
+      return;
+    }
+
+    // Clear current guess for the next row
+    userWord = "";
 
     // Advance to next row, or end game if this was the last row
     if (currentBoxMaxIndex < 30) currentBoxMaxIndex += 5;
